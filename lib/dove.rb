@@ -16,12 +16,12 @@ class Dove
 
     @options =  {
       :output_dir    => '.',
-      :template_file => 'dove/layout.slim',
+      :template_file => "#{File.dirname(__FILE__)}/dove/layout.slim",
       #:stylesheet    => 'styles.css'
     }.merge(options)
   end
 
-  # Extracts the YAML frontmatter
+  # Extracts the YAML frontmatter.
   def read_yaml text
     if md = text.match(/\A(---\s*\n.*?\n?)^(---\s*$\n?)/m)
       [md.post_match, YAML.load(md[1])]
@@ -30,6 +30,7 @@ class Dove
     end
   end
 
+  # Renders the Markdown file and inserts it into the layout.
   def render
     extensions = {
       autolink:             true,
