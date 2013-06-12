@@ -1,14 +1,15 @@
 #!/usr/bin/env ruby
 #/ Usage: dove [-o <dir>] <file>...
-#/ Generate literate-programming-style documentation for Ruby source <file>s.
+#/ Generate web documents from Markdown <file>s. Glob patterns can be used.
 #/
 #/ Options:
-#/   -t, --template=<path>  The file to use as template when rendering HTML
+#/   -t, --template=<path>  Specify the file to use as template
+#/   -w, --watch            Watch for file changes and rebuild
 #/       --help             Show this help message
 
 require 'optparse'
 require 'fileutils'
-require_relative '../lib/dove'
+require 'dove'
 
 # Write usage message to stdout and exit.
 def usage(stream=$stderr, status=1)
@@ -26,21 +27,31 @@ def abort_with_note(message=nil)
   abort "See `dove --help' for usage information."
 end
 
+# Generate the file and write it to output dir.
+def build(filename, options)
+  dove = Dove.new(filename, options)
+  dest = "#{File.basename(filename, '.*')}.html"
+  dest = File.join(options[:output_dir], dest) if options[:output_dir] != '.'
+  puts "dove: #{filename} -> #{dest}"
+  FileUtils.mkdir_p File.dirname(dest)
+  File.open(dest, 'wb') { |fd| fd.write(dove.render) }
+end
+
 # Parse command line options, aborting if anything goes wrong.
-output_dir = '.'
 sources = []
-options = {}
+options = {:output_dir => '.'}
 ARGV.options { |o|
   o.program_name = File.basename($0)
-  o.on("-o", "--output=DIR") { |dir| output_dir = dir }
-  o.on("-t", "--template=TEMPLATE") { |template| options[:template_file] = template }
+  o.on("-o", "--output=DIR")            { |dir| options[:output_dir] = dir }
+  o.on("-t", "--template=TEMPLATE")     { |template| options[:template_file] = template }
   o.on("-s", "--stylesheet=STYLESHEET") { |stylesheet| options[:stylesheet] = stylesheet }
-  o.on_tail("-h", "--help") { usage($stdout, 0) }
+  o.on("-w", "--watch")                 { options[:watch] = true }
+  o.on_tail("-h", "--help")             { usage($stdout, 0) }
   o.parse!
 } or abort_with_note
 
 # Eat sources from ARGV.
-sources << ARGV.shift while ARGV.any?
+sources.push(Dir[ARGV.shift]) while ARGV.any?
 
 # Make sure we have some files to work with.
 if sources.empty?
@@ -49,10 +60,30 @@ end
 
 # Run each file through Dove and write output.
 sources.each do |filename|
-  dove = Dove.new(filename, options)
-  dest = filename.sub(Regexp.new("#{File.extname(filename)}$"),".html")
-  dest = File.join(output_dir, dest) if output_dir != '.'
-  puts "dove: #{filename} -> #{dest}"
-  FileUtils.mkdir_p File.dirname(dest)
-  File.open(dest, 'wb') { |fd| fd.write(dove.render) }
+  build(filename, options)
 end
+
+def watch(files, options)
+  require 'directory_watcher'
+
+  dw = DirectoryWatcher.new('.', :glob => files, :pre_load => true)
+  dw.interval = 1
+
+  dw.add_observer do |*args|
+    t = Time.now.strftime("%Y-%m-%d %H:%M:%S")
+    puts "dove: Regenerating #{args.size} files at #{t}"
+    args.each { |event| build(event.path, options) }
+    puts  "...done."
+  end
+
+  dw.start
+
+  trap("INT") do
+    puts "dove: flew away"
+    exit 0
+  end
+
+  loop { sleep 1000 }
+end
+
+watch(sources, options) if options[:watch]

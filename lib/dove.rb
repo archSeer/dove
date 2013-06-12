@@ -3,7 +3,7 @@ require 'tilt'
 require 'slim'
 require 'yaml'
 require 'rouge'
-require_relative 'dove/rougify' # use Rouge as a highlighter
+require 'dove/rougify'
 
 class Dove
   def initialize(filename, options ={})
@@ -15,6 +15,7 @@ class Dove
     @data, @yaml_data = read_yaml(if block_given? then yield else File.read(filename) end)
 
     @options =  {
+      :output_dir    => '.',
       :template_file => 'layout.slim',
       #:stylesheet    => 'styles.css'
     }.merge(options)
