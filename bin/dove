@@ -32,7 +32,7 @@ def build(filename, options)
   dove = Dove.new(filename, options)
   dest = "#{File.basename(filename, '.*')}.html"
   dest = File.join(options[:output_dir], dest) if options[:output_dir] != '.'
-  puts "dove: #{filename} -> #{dest}"
+  puts "dove: #{Time.now.strftime("%Y-%m-%d %H:%M:%S")} #{filename} -> #{dest}"
   FileUtils.mkdir_p File.dirname(dest)
   File.open(dest, 'wb') { |fd| fd.write(dove.render) }
 end
@@ -51,7 +51,7 @@ ARGV.options { |o|
 } or abort_with_note
 
 # Eat sources from ARGV.
-sources.push(Dir[ARGV.shift]) while ARGV.any?
+sources.push(*Dir[ARGV.shift]) while ARGV.any?
 
 # Make sure we have some files to work with.
 if sources.empty?
@@ -66,14 +66,10 @@ end
 def watch(files, options)
   require 'directory_watcher'
 
-  dw = DirectoryWatcher.new('.', :glob => files, :pre_load => true)
-  dw.interval = 1
+  dw = DirectoryWatcher.new('.', glob: files, pre_load: true, interval: 1)
 
   dw.add_observer do |*args|
-    t = Time.now.strftime("%Y-%m-%d %H:%M:%S")
-    puts "dove: Regenerating #{args.size} files at #{t}"
     args.each { |event| build(event.path, options) }
-    puts  "...done."
   end
 
   dw.start
@@ -82,8 +78,8 @@ def watch(files, options)
     puts "dove: flew away"
     exit 0
   end
-
   loop { sleep 1000 }
 end
 
+# Start the watcher if the watch option was enabled.
 watch(sources, options) if options[:watch]

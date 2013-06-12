@@ -14,10 +14,10 @@ documents.
 ## Note
 
 I was really lazy and didn't want to bother converting Markdown into HTML, then inserting
-it into a HTML layout and bothering with syntax highlighting, so I quickly checked for
-other solutions. I've used Jekyll before, but as I write one-page documents, I don't
-really need a full-blown website solution. I've found [rocco](https://github.com/rtomayko/rocco)
-which is a code documentation generator, and I've used a bit of the code from there
+it into a HTML layout and bothering with syntax highlighting, so I've searched for alternatives.
+I've used Jekyll before, but for writing one-page documents I don't really need a full-blown
+static website solution. I then I had found [rocco](https://github.com/rtomayko/rocco)
+which is a code documentation generator, and I've used a bit of the code from it
 to write Dove, a (web) document generator.
 
 ## About

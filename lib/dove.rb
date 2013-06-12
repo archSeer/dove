@@ -16,7 +16,7 @@ class Dove
 
     @options =  {
       :output_dir    => '.',
-      :template_file => 'layout.slim',
+      :template_file => 'dove/layout.slim',
       #:stylesheet    => 'styles.css'
     }.merge(options)
   end
