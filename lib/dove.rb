@@ -12,7 +12,7 @@ class Dove
     # When `block` is given, it must read the contents of the file using
     # whatever means necessary and return it as a string. With no `block`,
     # the file is read to retrieve data.
-    @data, @yaml_data = read_yaml(if block_given? then yield else File.read(filename) end)
+    @data, @yaml_data = extract_yaml(if block_given? then yield else File.read(filename) end)
 
     @options =  {
       :output_dir    => '.',
@@ -22,7 +22,7 @@ class Dove
   end
 
   # Extracts the YAML frontmatter.
-  def read_yaml text
+  def extract_yaml text
     if md = text.match(/\A(---\s*\n.*?\n?)^(---\s*$\n?)/m)
       [md.post_match, YAML.load(md[1])]
     else
@@ -33,12 +33,13 @@ class Dove
   # Renders the Markdown file and inserts it into the layout.
   def render
     extensions = {
-      autolink:             true,
-      space_after_headers:  true,
-      fenced_code_blocks:   true,
-      lax_spacing:          true,
-      strikethrough:        true,
-      superscript:          true
+      autolink:            true,
+      space_after_headers: true,
+      fenced_code_blocks:  true,
+      lax_spacing:         true,
+      strikethrough:       true,
+      superscript:         true,
+      no_intra_emphasis:   true 
     }
     markdown = Redcarpet::Markdown.new(Rougify, extensions)
     Tilt.new(@options[:template_file], {pretty: true}).render(Object.new, @yaml_data) { markdown.render(@data) }

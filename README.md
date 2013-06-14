@@ -49,3 +49,5 @@ passing in the filename and options, then use the `render` method.
 dove = Dove.new('document.md', template_file: 'doc_layout.slim')
 dove.render
 ```
+
+Note: The default layout requires `author` and `title` YAML frontmatter.
