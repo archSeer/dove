@@ -1,8 +1,4 @@
----
-title: Dove
-author: Blaž Hrastnik
----
-<!--# Dove-->
+# Dove
 
 Write single page HTML documents with ease.
 
@@ -10,6 +6,8 @@ I sometimes want to quickly draft documents in something other than LaTeX. I've 
 that in the 21^st century HTML pages can easily serve that same purpose DOC, ODT and PDF
 files serve. Dove enables you to write your text in Markdown, then generate beautiful web
 documents.
+
+Example output can be seen [here](http://archseer.github.io/dove/).
 
 ## Note
 
