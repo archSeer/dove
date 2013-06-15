@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>
+      Dove
+    </title>
+    <link href="styles.css" rel="stylesheet" type="text/css" />
+    <link href="http://fonts.googleapis.com/css?family=Source+Sans+Pro" rel="stylesheet" type="text/css" />
+  </head>
+  <body>
+    <header>
+      Dove
+    </header>
+    <article><!--# Dove-->
+
+<p>Write single page HTML documents with ease.</p>
+
+<p>I sometimes want to quickly draft documents in something other than LaTeX. I&#39;ve realized
+that in the 21<sup>st</sup> century HTML pages can easily serve that same purpose DOC, ODT and PDF
+files serve. Dove enables you to write your text in Markdown, then generate beautiful web
+documents.</p>
+
+<h2>Note</h2>
+
+<p>I was really lazy and didn&#39;t want to bother converting Markdown into HTML, then inserting
+it into a HTML layout and bothering with syntax highlighting, so I&#39;ve searched for alternatives.
+I&#39;ve used Jekyll before, but for writing one-page documents I don&#39;t really need a full-blown
+static website solution. I then I had found <a href="https://github.com/rtomayko/rocco">rocco</a>
+which is a code documentation generator, and I&#39;ve used a bit of the code from it
+to write Dove, a (web) document generator.</p>
+
+<h2>About</h2>
+
+<p>Dove takes a Markdown file, converts it using <a href="https://github.com/vmg/redcarpet">Redcarpet</a>, syntax highlights
+any code snippets inside using <a href="https://github.com/jayferd/rouge">Rouge</a>, then
+it takes a layout file (I use <a href="http://slim-lang.com/">Slim</a>) and uses <a href="https://github.com/rtomayko/tilt">Tilt</a>
+to render it, and insert the document into the template. It also detects and
+extracts any YAML frontmatter and inserts it into the layout as variables!</p>
+
+<h2>Usage</h2>
+
+<p>Dove is meant to be used using it&#39;s binary file:</p>
+<pre class="highlight text">dove document.md
+</pre>
+<p>Glob patterns can also be used just as easily:</p>
+<pre class="highlight text">dove *.md README *.txt
+</pre>
+<p>But one can also require Dove inside a script, and make a new instance of it,
+passing in the filename and options, then use the <code>render</code> method.</p>
+<pre class="highlight ruby"><span class="n">dove</span> <span class="o">=</span> <span class="no">Dove</span><span class="nf">.new</span><span class="p">(</span><span class="s1">&#39;document.md&#39;</span><span class="p">,</span> <span class="ss">template_file: </span><span class="s1">&#39;doc_layout.slim&#39;</span><span class="p">)</span>
+<span class="n">dove</span><span class="nf">.render</span>
+</pre>
+    </article>
+    <footer>
+      Copyright &copy; 2013 Blaž Hrastnik
+    </footer>
+  </body>
+</html>
